@@ -84,6 +84,16 @@ The latter would have more metadata to search for, like subject or sender.
 Also, to be compliant with GDPR requirements, a method for purging single files from an archive must be possible, without breaking signatures or time stamps
 (likely by adding new signatures and timestamps but keeping the old ones for reference).
 
+## Contributing
+
+To ask for help, report bugs, suggest feature improvements, or discuss the global
+development of the package, please use the [issue tracker](https://github.com/unDocUMeantIt/apa/issues) on GitHub.
+
+### Branches
+
+Please note that all development happens in the `develop` branch. Pull requests against the `master`
+branch will be rejected, as it is reserved for the current stable release.
+
 ## License
 
 Copyright 2018 Meik Michalke <meik.michalke@hhu.de>
