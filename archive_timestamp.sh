@@ -107,6 +107,8 @@ Usage:
     ${TXT_BOLD}-6${OFF}             ${TSASRVFILE6}: ${TXT_BLUE}${TSASERVER6}${OFF} ${TXT_DGRAY}${TSASRVCOMMENT6}${OFF}
     ${TXT_BOLD}-T${OFF}             manual override
 
+  ${TXT_DGRAY}you can change/set the defaults by editing the config file for this script:${OFF}
+  ${TXT_BLUE}${CONFIGFILE}${OFF}
 "
 #     ${TXT_BOLD}-7${OFF}             ${TSASRVFILE7}: ${TXT_BLUE}${TSASERVER7}${OFF} ${TXT_DGRAY}${TSASRVCOMMENT7}${OFF}
 #     ${TXT_BOLD}-8${OFF}             ${TSASRVFILE8}: ${TXT_BLUE}${TSASERVER8}${OFF} ${TXT_DGRAY}${TSASRVCOMMENT8}${OFF}
