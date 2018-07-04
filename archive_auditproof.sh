@@ -50,6 +50,7 @@ appendconfig "${CONFIGFILE}" "^PGPDIGESTALGO" "PGPDIGESTALGO=\"SHA256\"" "config
 appendconfig "${CONFIGFILE}" "^TSASERVERS" "TSASERVERS=\"02\"" "config"
 appendconfig "${CONFIGFILE}" "^ARCHIVEDESC" "ARCHIVEDESC=\"some archive\"" "config"
 appendconfig "${CONFIGFILE}" "^ARCHIVEPREFIX" "ARCHIVEPREFIX=\"files\"" "config"
+appendconfig "${CONFIGFILE}" "^COMPRESSION" "COMPRESSION=\"none\"" "config"
 
 . "${CONFIGFILE}"
 
@@ -71,6 +72,10 @@ Usage:
     ${TXT_BOLD}-o${OFF} ${TXT_RED}${TXT_ITALIC}<path>${OFF}   target directory for the archive
                 default: ${TXT_BLUE}${ARCHIVEDIR}${OFF}
 
+    ${TXT_BOLD}-c${OFF} ${TXT_RED}${TXT_ITALIC}<type>${OFF}   type of compression for the archive (\"none\" or \"xz\")
+                also determines the file extension (*.apa.tar or *.apa.txz)
+                default: ${TXT_BLUE}${COMPRESSION}${OFF}
+
     ${TXT_BOLD}-t${OFF}          timestamp hashed and signed archive
     ${TXT_BOLD}-s${OFF} ${TXT_RED}${TXT_ITALIC}<TSA>${OFF}    TSA servers for timestamps
                 default: ${TXT_BLUE}${TSASERVERS}${OFF}
@@ -89,7 +94,7 @@ Usage:
 fi
 
 # get the options
-while getopts ":i:d:f:o:ts:T:k:" OPT; do
+while getopts ":i:d:f:o:c:ts:T:k:" OPT; do
   case $OPT in
     i) HAVEFILEDIR=true >&2
        FILEDIR=$OPTARG >&2
@@ -99,6 +104,8 @@ while getopts ":i:d:f:o:ts:T:k:" OPT; do
     f) ARCHIVEPREFIX=$OPTARG >&2
        ;;
     o) ARCHIVEDIR=$OPTARG >&2
+       ;;
+    c) COMPRESSION=$OPTARG >&2
        ;;
     t) TIMESTAMP=true >&2
        ;;
@@ -156,7 +163,7 @@ if ${TIMESTAMP} ; then
 fi
 
 # pack it all in the final archive
-compress_archive "${TMPARCHIVE}" "${ARCHIVEDIR}/${ARCHIVEPREFIX}_${DATEARCHIVE}.apa.txz"
+compress_archive "${TMPARCHIVE}" "${ARCHIVEDIR}/${ARCHIVEPREFIX}_${DATEARCHIVE}" "${COMPRESSION}"
 
 if ${RMTMPDIR} ; then
   if [ -d "${TMPARCHIVE}" ] ; then

@@ -52,9 +52,6 @@ Usage:
 
     ${TXT_BOLD}-T${OFF} ${TXT_RED}${TXT_ITALIC}<path>${OFF}   set the temporary directory manually
                 default: ${TXT_BLUE}\$(mktemp -d)${OFF}
-
-  ${TXT_DGRAY}you can change/set the defaults by editing the config file for this script:${OFF}
-  ${TXT_BLUE}${CONFIGFILE}${OFF}
 "
 
   exit 0

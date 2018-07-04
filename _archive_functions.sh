@@ -112,7 +112,7 @@ checksums() {
   check_tool "sha512sum" "$(which sha512sum)"
   OLDDIR="$(pwd)"
   cd "$1"
-  tar cvpf "$2" * | \
+  tar cvpf "$2" . | \
     tee >(xargs -I '{}' sh -c "test -f '{}' && sha256sum '{}'" > "$3") | \
     xargs -I '{}' sh -c "test -f '{}' && sha512sum '{}'" > "$4"
   cd "${OLDDIR}"
@@ -141,13 +141,30 @@ OpenPGP_sign_file() {
 
 compress_archive() {
   # $1: directory to archive
-  # $2: target tar file
+  # $2: target tar file without name extension
+  # $3: compression, either "none" or "xz"
   check_tool "tar" "$(which tar)"
-  check_tool "pxz" "$(which pxz)"
+  case "$3" in
+    none)
+      TARGETFILE="$2.apa.tar"
+      ;;
+    xz)
+      check_tool "pxz" "$(which pxz)"
+      TARGETFILE="$2.apa.txz"
+      ;;
+    *)
+      error "invalid type of compression: \"$3\""
+      ;;
+  esac
+
   OLDDIR="$(pwd)"
   cd "$1"
-  echo -en "writing archive ${TXT_BLUE}$2${OFF}..."
-  tar cpO * | pxz --stdout - > "$2" || error "failed compressing archive!"
+  echo -en "writing archive ${TXT_BLUE}${TARGETFILE}${OFF}..."
+  if [ "$3" == "xz" ] ; then
+    tar cpO * | pxz --stdout - > "${TARGETFILE}" || error "failed compressing archive!"
+  else
+    tar cpOf "$TARGETFILE" * || error "failed writing archive!"
+  fi
   cd "${OLDDIR}"
   alldone
 }
