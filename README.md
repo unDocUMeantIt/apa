@@ -10,11 +10,11 @@ The purpose of this repository is to facilitate audit-proof archiving of files w
 The scripts use well established Open Standards and reliable Free Software tools to accomplish this:
 
   1. SHA256 and SHA512 checksums
-    * if a single file changes its checksum will fail
+      * *if a single file changes its checksum will fail*
   2. GnuPG for OpenPGP signatures
-    * if a checksum is changed the OpenPGP signature will break (as will the time stamp)
+      * *if a checksum is changed the OpenPGP signature will break (as will the time stamp)*
   3. OpenSSL with RFC3161 compliant time stamping authority (TSA) servers
-    * if the signature is changed the time stamp will become invalid
+      * *if the signature is changed the time stamp will become invalid*
 
 Hence the only way to get an apa archive to pass all tests after changing a file is by updating checksums, signature and time stamp,
 which would inevitably change the archive's date. Meaning, it's no longer possible to change the past.
