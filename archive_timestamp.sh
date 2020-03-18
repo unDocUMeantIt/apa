@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Meik Michalke <meik.michalke@hhu.de>
+# Copyright 2018-2020 Meik Michalke <meik.michalke@hhu.de>
 #
 # This file is part of the bash scripts collection apa.
 #
@@ -16,6 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with apa.  If not, see <http://www.gnu.org/licenses/>.
+
+[[ "$1" =~ (--version) ]] && { 
+  echo "2020-03-18";
+  exit 0
+};
 
 SCRIPTDIR=$(dirname ${BASH_SOURCE[0]})
 SCRIPFUNCIONS="${SCRIPTDIR}/_archive_functions.sh"
@@ -78,10 +83,9 @@ appendconfig "${CONFIGFILE}" "^TSASRVCOMMENT6=" "TSASRVCOMMENT6=\"\"" "config"
 # appendconfig "${CONFIGFILE}" "^TSASERVER9=" "TSASERVER9=\"\"" "config"
 # appendconfig "${CONFIGFILE}" "^TSASRVFILE9=" "TSASRVFILE9=\"\"" "config"
 # appendconfig "${CONFIGFILE}" "^TSASRVCOMMENT9=" "TSASRVCOMMENT9=\"\"" "config"
+appendconfig "${CONFIGFILE}" "^TSASERVER=" "TSASERVER=\"\${TSASERVER0}\"" "config"
+appendconfig "${CONFIGFILE}" "^TSASRVFILE=" "TSASRVFILE=\"\${TSASRVFILE0}\"" "config"
 . "${CONFIGFILE}"
-
-TSASERVER="${TSASERVER0}"
-TSASRVFILE="${TSASRVFILE0}"
 
 if [[ $1 == "" ]] ; then
   echo -e "
@@ -89,7 +93,7 @@ Usage:
   ${TXT_BOLD}archive_timestamp.sh${OFF} ${TXT_DGRAY}${TXT_ITALIC}[OPTIONS]${OFF}
 
   ${TXT_UNDERSCORE}OPTIONS${OFF}:
-    ${TXT_BOLD}-f${OFF} ${TXT_LRED}${TXT_ITALIC}<file>${OFF}      path to actual file
+    ${TXT_BOLD}-f${OFF} ${TXT_LRED}${TXT_ITALIC}<file>${OFF}      path to file to be stamped or verified
 
     if only -f is given, the file will be timestamped to ${TXT_BLUE}<file>_\$DATE_\$SERVER.tsr${OFF}
 
@@ -107,6 +111,8 @@ Usage:
     ${TXT_BOLD}-6${OFF}             ${TSASRVFILE6}: ${TXT_BLUE}${TSASERVER6}${OFF} ${TXT_DGRAY}${TSASRVCOMMENT6}${OFF}
     ${TXT_BOLD}-T${OFF}             manual override
 
+  ${TXT_DGRAY}use${OFF} ${TXT_BOLD}--version${OFF} ${TXT_DGRAY}for version info.${OFF}
+
   ${TXT_DGRAY}you can change/set the defaults by editing the config file for this script:${OFF}
   ${TXT_BLUE}${CONFIGFILE}${OFF}
 "
@@ -119,7 +125,7 @@ fi
 # get the options
 while getopts ":f:t:T:vs0123456" OPT; do
   case $OPT in
-    f) DOSTAMP=true >&2
+    f) ! ${VERIFY} && ! ${SHOW} && DOSTAMP=true >&2
        FILE=$OPTARG >&2
        ;;
     t) TSRFILE=$OPTARG >&2
@@ -166,12 +172,10 @@ while getopts ":f:t:T:vs0123456" OPT; do
        SHOW=true >&2
        ;;
     \?)
-      echo -e "${TXT_RED}Invalid option:${OFF} ${TXT_BOLD}-$OPTARG${OFF}" >&2
-      exit 1
+      error "Invalid option: ${TXT_BOLD}-$OPTARG${OFF}" >&2
       ;;
     :)
-      echo -e "${TXT_RED}Option${OFF} ${TXT_BOLD}-$OPTARG${OFF} ${TXT_RED}requires an argument.${OFF}" >&2
-      exit 1
+      error "Option ${TXT_BOLD}-$OPTARG${OFF} requires an argument." >&2
       ;;
   esac
 done

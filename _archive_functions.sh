@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Meik Michalke <meik.michalke@hhu.de>
+# Copyright 2018-2020 Meik Michalke <meik.michalke@hhu.de>
 #
 # This file is part of the bash scripts collection apa.
 #
@@ -178,7 +178,7 @@ timestamp() {
   check_tool "curl" "$(which curl)"
   TSRFILE="$1_$2_$3.tsr"
   echo -en "generating timestamp: ${TXT_BLUE}${TSRFILE}${OFF} ..."
-  openssl ts -query -data "$1" -no_nonce -sha512 -cert | curl --silent --show-error --header "Content-Type: application/timestamp-query" --data-binary @- "$4" > "${TSRFILE}" || exit 1
+  openssl ts -query -data "$1" -no_nonce -sha512 -cert | curl --silent --show-error --header "Content-Type: application/timestamp-query" --data-binary @- "$4" > "${TSRFILE}" || error "timestamp failed!"
   alldone
 }
 

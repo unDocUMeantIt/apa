@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Meik Michalke <meik.michalke@hhu.de>
+# Copyright 2018-2020 Meik Michalke <meik.michalke@hhu.de>
 #
 # This file is part of the bash scripts collection apa.
 #
@@ -16,6 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with apa.  If not, see <http://www.gnu.org/licenses/>.
+
+[[ "$1" =~ (--version) ]] && { 
+  echo "2020-03-18";
+  exit 0
+};
 
 SCRIPTDIR=$(dirname ${BASH_SOURCE[0]})
 SCRIPFUNCIONS="${SCRIPTDIR}/_archive_functions.sh"
@@ -52,6 +57,8 @@ Usage:
 
     ${TXT_BOLD}-T${OFF} ${TXT_RED}${TXT_ITALIC}<path>${OFF}   set the temporary directory manually
                 default: ${TXT_BLUE}\$(mktemp -d)${OFF}
+
+  ${TXT_DGRAY}use${OFF} ${TXT_BOLD}--version${OFF} ${TXT_DGRAY}for version info.${OFF}
 "
 
   exit 0
@@ -78,12 +85,10 @@ while getopts ":i:ahptT:" OPT; do
        REVTMPDIR=$OPTARG >&2
        ;;
     \?)
-       echo -e "${TXT_RED}Invalid option:${OFF} ${TXT_BOLD}-$OPTARG${OFF}" >&2
-       exit 1
+       error "Invalid option: ${TXT_BOLD}-$OPTARG${OFF}" >&2
        ;;
     :)
-       echo -e "${TXT_RED}Option${OFF} ${TXT_BOLD}-$OPTARG${OFF} ${TXT_RED}requires an argument.${OFF}" >&2
-       exit 1
+       error "Option ${TXT_BOLD}-$OPTARG${OFF} requires an argument." >&2
        ;;
   esac
 done
