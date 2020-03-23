@@ -18,7 +18,7 @@
 # along with apa.  If not, see <http://www.gnu.org/licenses/>.
 
 [[ "$1" =~ (--version) ]] && { 
-  echo "2020-03-18";
+  echo "2020-03-23";
   exit 0
 };
 
@@ -62,7 +62,10 @@ appendconfig "${CONFIGFILE}" "^COMPRESSION" "COMPRESSION=\"none\"" "config"
 if [[ $1 == "" ]] ; then
   echo -e "
 Creates a compressed archive of all files in a given directory with checksums,
-OpenPGP signature, and optionally an enclosed TSA timestamp
+OpenPGP signature, and optionally an enclosed TSA timestamp.
+
+If ${TXT_BOLD}-i${OFF} is a single file instead of a directory, the filename
+prefix will become identical to the basename of the input file.
  
 Usage:
   ${TXT_BOLD}archive_auditproof.sh${OFF} ${TXT_DGRAY}${TXT_ITALIC}[OPTIONS]${OFF}
@@ -73,6 +76,7 @@ Usage:
                 default: ${TXT_BLUE}${ARCHIVEDESC}${OFF}
     ${TXT_BOLD}-f${OFF} ${TXT_RED}${TXT_ITALIC}<text>${OFF}   filename prefix for resulting archive
                 default: ${TXT_BLUE}${ARCHIVEPREFIX}${OFF}
+                ignored if ${TXT_BOLD}-i${OFF} is a single file
 
     ${TXT_BOLD}-o${OFF} ${TXT_RED}${TXT_ITALIC}<path>${OFF}   target directory for the archive
                 default: ${TXT_BLUE}${ARCHIVEDIR}${OFF}
@@ -168,7 +172,14 @@ if ${TIMESTAMP} ; then
 fi
 
 # pack it all in the final archive
-compress_archive "${TMPARCHIVE}" "${ARCHIVEDIR}/${ARCHIVEPREFIX}_${DATEARCHIVE}" "${COMPRESSION}"
+if [ -d "${FILEDIR}" ] ; then
+  compress_archive "${TMPARCHIVE}" "${ARCHIVEDIR}/${ARCHIVEPREFIX}_${DATEARCHIVE}" "${COMPRESSION}"
+elif [ -f "${FILEDIR}" ] ; then
+  ARCHIVEPREFIX=$(basename -- "${FILEDIR}")
+  compress_archive "${TMPARCHIVE}" "${ARCHIVEDIR}/${ARCHIVEPREFIX}_${DATEARCHIVE}" "${COMPRESSION}"
+else
+  error "source (-i) must be a directory or file!"
+fi
 
 if ${RMTMPDIR} ; then
   if [ -d "${TMPARCHIVE}" ] ; then

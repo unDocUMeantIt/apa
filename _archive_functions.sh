@@ -111,10 +111,19 @@ checksums() {
   check_tool "sha256sum" "$(which sha256sum)"
   check_tool "sha512sum" "$(which sha512sum)"
   OLDDIR="$(pwd)"
-  cd "$1"
-  tar cvpf "$2" . | \
-    tee >(xargs -I '{}' sh -c "test -f '{}' && sha256sum '{}'" > "$3") | \
-    xargs -I '{}' sh -c "test -f '{}' && sha512sum '{}'" > "$4"
+  if [ -d "$1" ] ; then
+    cd "$1"
+    tar cvpf "$2" . | \
+      tee >(xargs -I '{}' sh -c "test -f '{}' && sha256sum '{}'" > "$3") | \
+      xargs -I '{}' sh -c "test -f '{}' && sha512sum '{}'" > "$4"
+  elif [ -f "$1" ] ; then
+    cd "$(dirname -- "$1")"
+    tar cvpf "$2" "$(basename -- "$1")" | \
+      tee >(xargs -I '{}' sh -c "test -f '{}' && sha256sum '{}'" > "$3") | \
+      xargs -I '{}' sh -c "test -f '{}' && sha512sum '{}'" > "$4"
+  else
+    error "source must be a directory or file!"
+  fi
   cd "${OLDDIR}"
 }
 
